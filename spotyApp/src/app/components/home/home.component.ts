@@ -8,7 +8,7 @@ import { SpotifyService } from '../../services/spotify.service';
 })
 export class HomeComponent implements OnInit {
 
-  loading: boolean;
+  loading: boolean = true;
   error: boolean;
   NuevasCanciones : any[] = [];
   mensajeError: string = '';
@@ -19,16 +19,17 @@ export class HomeComponent implements OnInit {
     this.loading = true;
     this.error = false;
 
-    this.spotify.getReleases().subscribe((data:any) => {
+    this.spotify.getReleases()
+    .subscribe((data:any) => {
       this.NuevasCanciones = data["albums"].items;
       this.loading = false;
     console.log("this.spotify.getReleases")
     console.log(data)
-  }, (errorServicio: any) => {
+  }, (errorServicio:any) => {
     this.loading = false;
     this.error = true;
     console.log(errorServicio);
-    this.mensajeError = errorServicio.error.error.mensaje;
+    this.mensajeError = errorServicio.error.error.message;
   });
   }
 

@@ -5,14 +5,27 @@ import { map } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class SpotifyService {
-
+ public credentials = {
+  client_id: '508600b5f1f048d09afb174c4c37e85c',
+  client_secret: '0db964503e6a4bf5b5dfeb7f0d59e854',
+  accesToken: ''
+ };
+ public poolURls = {
+autohirze: 'https://accounts.spotify.com/es-ES/authorize?client_id='+
+this.credentials.client_id ,
+refreshAccessToken: 'https://accounts.spotify.com/api/token'
+ };
   constructor(private http: HttpClient) {
-    console.log("Spotify Service is Ready!");
+    this.upDateToken();
+        console.log("Spotify Service is Ready!");
+   }
+   upDateToken(){
+     this.credentials.accesToken = sessionStorage.getItem('token') || '';
    }
    getQuery(query: string){ 
      const url = `https://api.spotify.com/v1/${ query }`;
-     const headers = new HttpHeaders({'Authorization':'Bearer BQAdtTDmM58fgSKeOqnl_fQrkccP_XCn1Kxh2ocajFbz9fl4PTWDnOA3dTbYksapAkET8kvVlynUIoLqrPQ-HyB0JTl4iAaEFeAXCzQqbWTmdoH07jn2PwiDt52sg8sGtu7UBl7zPfSqrqXVCR8TlsMhSvbU9-CEqD9DrpL0fE-Fshms' })
-      return this.http.get(url,{headers: headers});   
+     const headers = {headers: new HttpHeaders({'Authorization':'Bearer' + this.credentials.accesToken})}
+      return this.http.get(url,headers);   
     }
    getReleases(){
     console.log('getReleases') 
@@ -24,7 +37,26 @@ export class SpotifyService {
     getArtista(id: string){
       return this.getQuery(`artists/${id}`);
     }
+       //tarea: getTopTracks(artista), revisar api
+    //Query para obtener : Las Mejores Pistas del Artista - Artist's Top Tracks 
+    getArtistTopTracks(id : string){
+      return this.getQuery(`artists/${ id }/top-tracks?market=ES`);
+      }
+  
+      //Query para obtener : Pistas - Tracks 
+      getTracks(id: string){
+        return this.getQuery(`tracks/${ id }`);
+      }
+  
       getTopTracks(id : string){
-      return this.getQuery(`artists/${id}/top-tracks?market=ES`);
+        return this.getQuery(`artists/${ id }/top-tracks?market=ES`);
+      }
+     
+      checkTokenSpo(){
+        return !!this.credentials.accesToken;
+      }
+    tokenRefreshURL(){
+      this.credentials.accesToken = '';
+      sessionStorage.removeItem('token');
     }
 }

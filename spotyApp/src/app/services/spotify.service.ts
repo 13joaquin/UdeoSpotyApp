@@ -24,7 +24,7 @@ refreshAccessToken: 'https://accounts.spotify.com/api/token'
    }
    getQuery(query: string){ 
      const url = `https://api.spotify.com/v1/${ query }`;
-     const headers = {headers: new HttpHeaders({'Authorization':'Bearer' + this.credentials.accesToken})}
+     const headers = {headers: new HttpHeaders({'Authorization':'Bearer' + this.credentials.accesToken})};
       return this.http.get(url,headers);   
     }
    getReleases(){
@@ -51,12 +51,16 @@ refreshAccessToken: 'https://accounts.spotify.com/api/token'
       getTopTracks(id : string){
         return this.getQuery(`artists/${ id }/top-tracks?market=ES`);
       }
-     
+     checkTokenSpoLogin(){
+       this.checkTokenSpo() || (sessionStorage.setItem('refererURL', location.href), window.location.href = this.poolURls.autohirze);
+     }
       checkTokenSpo(){
         return !!this.credentials.accesToken;
       }
     tokenRefreshURL(){
+      this.checkTokenSpo() && alert('Expiro la sesión');
       this.credentials.accesToken = '';
       sessionStorage.removeItem('token');
+      this.checkTokenSpoLogin();
     }
 }
